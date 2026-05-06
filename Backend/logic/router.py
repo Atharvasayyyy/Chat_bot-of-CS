@@ -12,6 +12,7 @@ from tools.db_verification_tool import verify_purchase
 from tools.refund_tool import process_refund
 from tools.exchange_tool import create_exchange
 from tools.ticket_tool import create_ticket
+
 from services.db_service import fetch_one
 from services.vision_service import validate_image
 
@@ -19,8 +20,9 @@ import re
 
 
 # ==================================================
-# 🧠 LIGHTWEIGHT CONVERSATION MEMORY
+# 🧠 LIGHTWEIGHT MEMORY
 # ==================================================
+
 CONVERSATION_STATE = {}
 
 
@@ -33,11 +35,8 @@ def extract_order_id(verification_text):
     return match.group(1) if match else None
 
 
-# ==================================================
-# 🔥 RESPONSE CLEANER (VERY IMPORTANT)
-# ==================================================
-
 def clean_response(text):
+
     banned = [
         "status",
         "explanation",
@@ -48,7 +47,7 @@ def clean_response(text):
     ]
 
     for word in banned:
-        if word in text.lower():
+        if word.lower() in text.lower():
             return "Please upload a clearer image."
 
     return text
@@ -58,55 +57,8 @@ def normalize_status(value):
     return str(value or "").strip().lower()
 
 
-def get_user_profile(user_id):
-    return fetch_one(
-        "SELECT complaint_count FROM users WHERE user_id = %s",
-        (user_id,)
-    ) or {}
-
-
-def get_order_for_product(user_id, product_name):
-    return fetch_one(
-        """
-        SELECT order_id, product_name, price, status
-        FROM orders
-        WHERE user_id = %s AND LOWER(product_name) = LOWER(%s)
-        LIMIT 1
-        """,
-        (user_id, product_name)
-    )
-
-
-def get_order_by_id(user_id, order_id):
-    return fetch_one(
-        """
-        SELECT order_id, product_name, price, status
-        FROM orders
-        WHERE user_id = %s AND order_id = %s
-        LIMIT 1
-        """,
-        (user_id, order_id)
-    )
-
-
-def build_risk_context(user_id, order=None, evidence=None):
-    user_profile = get_user_profile(user_id)
-    complaint_count = user_profile.get("complaint_count", 0) or 0
-
-    return {
-        "price": float(order.get("price", 0) or 0) if order else 0,
-        "kb_found": True,
-        "user_history": complaint_count,
-        "has_image": bool((evidence or {}).get("has_image")),
-    }
-
-
-def is_duplicate_order(order):
-    status = normalize_status(order.get("status"))
-    return status in {"refunded", "exchanged"}
-
-
 def get_state(user_id):
+
     return CONVERSATION_STATE.setdefault(
         str(user_id),
         {
@@ -115,29 +67,123 @@ def get_state(user_id):
             "last_product": None,
             "awaiting_product": False,
             "awaiting_image": False,
-        },
+        }
     )
 
 
 def update_state(user_id, **changes):
+
     state = get_state(user_id)
     state.update(changes)
+
     return state
+
+
+# ==================================================
+# 🧾 DATABASE HELPERS
+# ==================================================
+
+def get_user_profile(user_id):
+
+    return fetch_one(
+        """
+        SELECT complaint_count
+        FROM users
+        WHERE user_id = %s
+        """,
+        (user_id,)
+    ) or {}
+
+
+def get_order_for_product(user_id, product_name):
+
+    return fetch_one(
+        """
+        SELECT order_id, product_name, price, status
+        FROM orders
+        WHERE user_id = %s
+        AND LOWER(product_name) = LOWER(%s)
+        LIMIT 1
+        """,
+        (user_id, product_name)
+    )
+
+
+def get_order_by_id(user_id, order_id):
+
+    return fetch_one(
+        """
+        SELECT order_id, product_name, price, status
+        FROM orders
+        WHERE user_id = %s
+        AND order_id = %s
+        LIMIT 1
+        """,
+        (user_id, order_id)
+    )
+
+
+def build_risk_context(user_id, order=None, evidence=None):
+
+    user_profile = get_user_profile(user_id)
+
+    complaint_count = user_profile.get("complaint_count", 0) or 0
+
+    return {
+        "price": float(order.get("price", 0) or 0) if order else 0,
+        "user_history": complaint_count,
+        "has_image": bool((evidence or {}).get("has_image")),
+        "kb_found": True,
+    }
+
+
+def is_duplicate_order(order):
+
+    status = normalize_status(order.get("status"))
+
+    return status in ["refunded", "exchanged"]
+
+
+# ==================================================
+# 🔥 QUERY PROTECTION
+# ==================================================
+
+def contains_action_keywords(text):
+
+    keywords = [
+        "refund",
+        "exchange",
+        "return",
+        "damaged",
+        "broken"
+    ]
+
+    text = text.lower()
+
+    return any(k in text for k in keywords)
 
 
 # ==================================================
 # 🚀 MAIN HANDLER
 # ==================================================
 
-def handle_request(user_id, user_input, image_path=None, selected_order_id=None, selected_product=None, selected_action=None):
+def handle_request(
+    user_id,
+    user_input,
+    image_path=None,
+    selected_order_id=None,
+    selected_product=None,
+    selected_action=None
+):
+
     state = get_state(user_id)
 
     # ==================================================
     # 🔥 CLEAN INPUT
     # ==================================================
+
     clean_input = str(user_input or "").strip()
 
-    # Allow image-only follow-ups when the conversation already has context.
     if (not clean_input or clean_input.lower() == "text") and image_path:
         clean_input = state.get("last_input") or "User uploaded an image."
 
@@ -145,52 +191,111 @@ def handle_request(user_id, user_input, image_path=None, selected_order_id=None,
         return "Please describe your issue."
 
     # ==================================================
-    # INTENT + EVIDENCE
+    # 🔥 DETECT INTENT
     # ==================================================
+
     intent = detect_intent(clean_input)
-    if selected_action and selected_action in {"refund", "exchange", "query"}:
+
+    if selected_action in ["refund", "exchange", "query"]:
         intent = selected_action
+
     evidence = analyze_evidence(clean_input, image_path)
 
-    # If the user is replying with just a product name after a pending refund/exchange,
-    # treat it as the missing product rather than a new standalone message.
-    if state.get("awaiting_product") and clean_input.lower() not in {"refund", "exchange", "query"}:
-        hinted_product = extract_product(clean_input, f"Product: {clean_input}") or clean_input
-        update_state(
-            user_id,
-            last_input=clean_input,
-            last_product=hinted_product,
-            awaiting_product=False,
-            awaiting_image=True,
-            last_intent=state.get("last_intent") or intent,
-        )
-    else:
-        update_state(user_id, last_input=clean_input, last_intent=intent)
+    update_state(
+        user_id,
+        last_input=clean_input,
+        last_intent=intent
+    )
 
     # ==================================================
     # 🔥 IMAGE PROCESSING
     # ==================================================
+
     image_data = None
 
     if image_path:
-        image_validation = validate_image(image_path)
-        if image_validation.get("type") == "image_rejected":
-            return image_validation["message"]
 
-        if image_validation.get("type") == "image_fake":
-            return image_validation["message"]
+        validation = validate_image(image_path)
+
+        if validation.get("type") == "image_rejected":
+            return validation["message"]
+
+        if validation.get("type") == "image_fake":
+            return validation["message"]
 
         print("📸 Processing image:", image_path)
+
         image_data = process_image(image_path)
+
         print("🧠 Image Data:", image_data)
 
+        # 🔥 ONLY BLOCK IF OBJECT MISSING
         if not image_data.get("object"):
-            return "No clear object detected. Please upload a clearer image."
+            return "Please upload a clearer image."
 
     # ==================================================
-    # RISK + DECISION
+    # 🔥 PRODUCT EXTRACTION
     # ==================================================
-    risk = classify_risk(evidence, image_data or {}, build_risk_context(user_id))
+
+    product = None
+    order = None
+
+    # selected order
+    if selected_order_id:
+        order = get_order_by_id(user_id, selected_order_id)
+
+    # selected product
+    if selected_product:
+        product = selected_product
+
+        if not order:
+            order = get_order_for_product(user_id, selected_product)
+
+    # extract dynamically
+    if intent in ["refund", "exchange"]:
+
+        try:
+
+            if not product:
+
+                orders = get_user_orders.run(user_id)
+
+                product = extract_product(clean_input, orders)
+
+                print("🧾 Product:", product)
+
+                if product:
+                    order = get_order_for_product(user_id, product)
+
+                    update_state(
+                        user_id,
+                        last_product=product
+                    )
+
+        except Exception as e:
+            print("❌ Product extraction error:", e)
+
+        # fallback from memory
+        if not product and state.get("last_product"):
+            product = state.get("last_product")
+            order = get_order_for_product(user_id, product)
+
+    # ==================================================
+    # 🔥 RISK ENGINE (AFTER ORDER)
+    # ==================================================
+
+    risk_context = build_risk_context(
+        user_id=user_id,
+        order=order,
+        evidence=evidence
+    )
+
+    risk = classify_risk(
+        evidence,
+        image_data or {},
+        risk_context
+    )
+
     decision = decide_flow(intent, risk)
 
     print("Intent:", intent)
@@ -198,151 +303,257 @@ def handle_request(user_id, user_input, image_path=None, selected_order_id=None,
     print("Decision:", decision)
 
     # ==================================================
-    # PRODUCT EXTRACTION
+    # 🔥 PROTECT QUERY FLOW
     # ==================================================
-    product = None
-    order = None
-
-    if selected_order_id:
-        order = get_order_by_id(user_id, selected_order_id)
-
-    if selected_product:
-        product = selected_product
-        if not order:
-            order = get_order_for_product(user_id, selected_product)
-
-    if decision in ["refund", "exchange"]:
-        try:
-            if not product:
-                orders = get_user_orders.run(user_id)
-                product = extract_product(clean_input, orders)
-                if product:
-                    order = get_order_for_product(user_id, product)
-                    update_state(user_id, last_product=product)
-                print("🧾 Product:", product)
-        except Exception as e:
-            print("❌ Product extraction error:", e)
-
-        if not product and state.get("last_product"):
-            product = state.get("last_product")
-            order = get_order_for_product(user_id, product)
 
     if decision == "query":
+
+        if contains_action_keywords(clean_input):
+            return "Please specify the product."
+
         response = query_flow(clean_input)
-        update_state(user_id, awaiting_product=False, awaiting_image=False)
+
+        update_state(
+            user_id,
+            awaiting_product=False,
+            awaiting_image=False
+        )
+
         return clean_response(response)
 
     # ==================================================
-    # 🔥 IMAGE ↔ PRODUCT MATCH
+    # 🔥 IMAGE ↔ PRODUCT MATCHING
     # ==================================================
-    if image_data and product:
-        detected = image_data.get("object")
 
-        # Product-to-YOLO-class mapping for fuzzy matching
+    if image_data and product:
+
+        detected = image_data.get("object", "").lower()
+
         product_label_map = {
-            "Shoes": ["shoe", "sneaker", "boot", "sandal", "slipper", "loafer", "pump", "footwear", "flip flop", "oxford"],
-            "Laptop": ["laptop", "computer", "notebook", "monitor", "keyboard"],
-            "Phone": ["phone", "smartphone", "mobile", "cell phone", "iphone"],
-            "Headphones": ["headphones", "earbuds", "headset", "earmuffs", "earphone"],
-            "Fan": ["fan"]
+            "fan": ["fan", "scissors", "propeller"],
+            "laptop": ["laptop", "computer", "keyboard"],
+            "phone": ["phone", "smartphone", "iphone"],
+            "headphones": ["headphones", "earbuds", "headset"],
+            "shoes": ["shoe", "sneaker", "boot", "sandal"]
         }
 
-        allowed_labels = product_label_map.get(product, [product.lower()])
-        detected_lower = detected.lower() if detected else ""
-        
-        # Check if detected label matches any allowed label (either exact word or substring)
-        is_match = any(label in detected_lower for label in allowed_labels) if detected else False
-        
+        allowed_labels = product_label_map.get(
+            product.lower(),
+            [product.lower()]
+        )
+
+        is_match = any(
+            label == detected or label in detected
+            for label in allowed_labels
+        )
+
         if detected and not is_match:
-            return f"Image does not match {product}. Detected: {detected}. Please upload a clear image of the product."
+            return (
+                f"Image does not match {product}. "
+                f"Detected: {detected}. "
+                f"Please upload the correct product image."
+            )
 
     # ==================================================
-    # 💰 REFUND FLOW (NO LLM)
+    # 💰 REFUND FLOW
     # ==================================================
+
     if decision == "refund":
 
+        # missing product
         if not product:
-            update_state(user_id, awaiting_product=True, awaiting_image=False)
+
+            update_state(
+                user_id,
+                awaiting_product=True,
+                awaiting_image=False
+            )
+
             return "Which product are you referring to?"
 
-        verification = verify_purchase.run({"user_id": user_id, "product_name": product})
-
-        if "not found" in verification.lower():
-            update_state(user_id, awaiting_product=False, awaiting_image=False)
-            return "Product not found in your orders."
-
+        # no order
         if not order:
-            order = get_order_for_product(user_id, product)
 
+            verification = verify_purchase.run({
+                "user_id": user_id,
+                "product_name": product
+            })
+
+            if "not found" in verification.lower():
+
+                update_state(
+                    user_id,
+                    awaiting_product=False,
+                    awaiting_image=False
+                )
+
+                return "Product not found in your orders."
+
+            order_id = extract_order_id(verification)
+
+        else:
+
+            verification = f"""
+Order ID: {order['order_id']}
+Product: {order['product_name']}
+Status: {order['status']}
+"""
+
+            order_id = order["order_id"]
+
+        # duplicate protection
         if order and is_duplicate_order(order):
+
             status = normalize_status(order.get("status"))
-            update_state(user_id, awaiting_product=False, awaiting_image=False)
+
+            update_state(
+                user_id,
+                awaiting_product=False,
+                awaiting_image=False
+            )
+
             return f"This order has already been {status}."
 
+        # image required
         if not evidence.get("has_image"):
-            update_state(user_id, awaiting_product=False, awaiting_image=True, last_product=product)
+
+            update_state(
+                user_id,
+                awaiting_product=False,
+                awaiting_image=True,
+                last_product=product
+            )
+
             return f"Please upload an image of the {product}."
 
-        order_id = extract_order_id(verification)
-
+        # LOW RISK → AUTO REFUND
         if risk == "low":
+
             result = process_refund.run({
                 "user_id": user_id,
                 "order_id": order_id,
                 "reason": "Damaged product"
             })
-            update_state(user_id, awaiting_product=False, awaiting_image=False)
+
+            update_state(
+                user_id,
+                awaiting_product=False,
+                awaiting_image=False
+            )
+
             return result
 
+        # HIGH/MEDIUM → TICKET
         result = create_ticket.run({
             "user_id": user_id,
             "order_id": order_id,
             "issue": clean_input,
             "priority": "HIGH" if risk == "high" else "MEDIUM"
         })
-        update_state(user_id, awaiting_product=False, awaiting_image=False)
+
+        update_state(
+            user_id,
+            awaiting_product=False,
+            awaiting_image=False
+        )
+
         return result
 
     # ==================================================
-    # 🔁 EXCHANGE FLOW (NO LLM)
+    # 🔁 EXCHANGE FLOW
     # ==================================================
+
     if decision == "exchange":
 
+        # missing product
         if not product:
-            update_state(user_id, awaiting_product=True, awaiting_image=False)
+
+            update_state(
+                user_id,
+                awaiting_product=True,
+                awaiting_image=False
+            )
+
             return "Which product do you want to exchange?"
 
-        verification = verify_purchase.run({"user_id": user_id, "product_name": product})
-
-        if "not found" in verification.lower():
-            update_state(user_id, awaiting_product=False, awaiting_image=False)
-            return "Product not found in your orders."
-
+        # no order
         if not order:
-            order = get_order_for_product(user_id, product)
 
+            verification = verify_purchase.run({
+                "user_id": user_id,
+                "product_name": product
+            })
+
+            if "not found" in verification.lower():
+
+                update_state(
+                    user_id,
+                    awaiting_product=False,
+                    awaiting_image=False
+                )
+
+                return "Product not found in your orders."
+
+            order_id = extract_order_id(verification)
+
+        else:
+
+            verification = f"""
+Order ID: {order['order_id']}
+Product: {order['product_name']}
+Status: {order['status']}
+"""
+
+            order_id = order["order_id"]
+
+        # duplicate protection
         if order and is_duplicate_order(order):
+
             status = normalize_status(order.get("status"))
-            update_state(user_id, awaiting_product=False, awaiting_image=False)
+
+            update_state(
+                user_id,
+                awaiting_product=False,
+                awaiting_image=False
+            )
+
             return f"This order has already been {status}."
 
+        # image required
         if not evidence.get("has_image"):
-            update_state(user_id, awaiting_product=False, awaiting_image=True, last_product=product)
+
+            update_state(
+                user_id,
+                awaiting_product=False,
+                awaiting_image=True,
+                last_product=product
+            )
+
             return f"Please upload an image of the {product}."
 
-        order_id = extract_order_id(verification)
-
+        # create exchange
         create_exchange.run({
             "user_id": user_id,
             "order_id": order_id,
             "new_product": product
         })
 
-        update_state(user_id, awaiting_product=False, awaiting_image=False)
+        update_state(
+            user_id,
+            awaiting_product=False,
+            awaiting_image=False
+        )
+
         return "Your exchange request has been created."
 
     # ==================================================
     # 🔥 FALLBACK
     # ==================================================
-    update_state(user_id, awaiting_product=False, awaiting_image=False)
-    return "I couldn't understand your request. Please try again."
+
+    update_state(
+        user_id,
+        awaiting_product=False,
+        awaiting_image=False
+    )
+
+    return "I couldn't understand your request."
