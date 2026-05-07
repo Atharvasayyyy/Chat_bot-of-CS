@@ -38,9 +38,8 @@ This guide walks you through deploying your Customer Support application to prod
    - **Name:** `customer-support-api`
    - **Region:** Choose closest to you (or default)
    - **Branch:** `main`
-   - **Runtime:** `Python 3`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port 8000`
+   - **Runtime:** `Docker`
+   - **Dockerfile Path:** `Backend/Dockerfile`
    - **Plan:** Free (or Pro for better performance)
 
 6. Click **Advanced** to add **Environment Variables:**
@@ -198,7 +197,8 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 - **Backend:**
   - `Backend/requirements.txt` - Python dependencies
-  - `Backend/render.yaml` - Render configuration
+   - `Backend/render.yaml` - Render configuration
+   - `Backend/Dockerfile` - Forces Python 3.11 for a wheel-based build
   - `Backend/.env.example` - Environment variables template
   - Updated `Backend/main.py` - CORS configuration
 

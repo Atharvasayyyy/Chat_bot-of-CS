@@ -1,13 +1,10 @@
 services:
   - type: web
     name: customer-support-api
-    runtime: python
+    runtime: docker
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: "uvicorn main:app --host 0.0.0.0 --port 8000"
+    dockerfilePath: Dockerfile
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11
       - key: DB_HOST
         fromDatabase:
           name: customer-support-db
@@ -32,6 +29,8 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://your-frontend-url.vercel.app
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000,http://localhost:5173,https://your-frontend-url.vercel.app
 
 databases:
   - name: customer-support-db
