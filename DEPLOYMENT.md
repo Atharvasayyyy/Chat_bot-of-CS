@@ -77,9 +77,11 @@ This guide walks you through deploying your Customer Support application to prod
    - **Root Directory:** `./Frontend/support-ui`
 
 6. Click **Environment Variables** and add:
+
    ```
    VITE_API_BASE_URL = https://your-backend-render.onrender.com
    ```
+
    (Replace with your actual backend URL from Step 1.2)
 
 7. Click **Deploy**
@@ -105,6 +107,7 @@ This guide walks you through deploying your Customer Support application to prod
 ### 3.2 Verify CORS Configuration
 
 Test that your frontend can reach the backend:
+
 1. Open your Vercel frontend URL
 2. Fill in the chat form and test the API call
 3. Check Render logs for any errors: Dashboard → Your Service → Logs
@@ -116,7 +119,7 @@ Test that your frontend can reach the backend:
 To extract database credentials from Render:
 
 1. Go to Render Dashboard → **PostgreSQL** service
-2. Find the **Internal Database URL**: 
+2. Find the **Internal Database URL**:
    ```
    postgresql://user:password@hostname:5432/dbname
    ```
@@ -132,6 +135,7 @@ To extract database credentials from Render:
 ## 🔑 Step 5: Environment Variables Summary
 
 ### Backend (Render):
+
 ```
 DB_HOST=<database-host>
 DB_PORT=5432
@@ -145,6 +149,7 @@ ENVIRONMENT=production
 ```
 
 ### Frontend (Vercel):
+
 ```
 VITE_API_BASE_URL=https://your-backend-render.onrender.com
 ```
@@ -164,21 +169,25 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 ## 🚨 Troubleshooting
 
 ### Frontend shows "Cannot reach backend"
+
 - ✅ Check `VITE_API_BASE_URL` in Vercel environment variables
 - ✅ Verify Render backend is running (check Render logs)
 - ✅ Ensure CORS is configured correctly in `Backend/main.py`
 
 ### Database connection errors
+
 - ✅ Verify `DB_HOST`, `DB_USER`, `DB_PASSWORD` are correct
 - ✅ Check database is still running on Render
 - ✅ Make sure port `5432` is open (Render handles this automatically)
 
 ### "SENDGRID_API_KEY" not found
+
 - ✅ Go to Render → Your Service → Environment
 - ✅ Add/update the `SENDGRID_API_KEY` variable
 - ✅ Redeploy the service
 
 ### Build fails on Vercel
+
 - ✅ Check Vercel build logs for details
 - ✅ Verify `vite.config.js` is present in `Frontend/support-ui/`
 - ✅ Ensure all npm dependencies are installed locally first
@@ -187,7 +196,7 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 ## 📝 Files Created for Deployment
 
-- **Backend:** 
+- **Backend:**
   - `Backend/requirements.txt` - Python dependencies
   - `Backend/render.yaml` - Render configuration
   - `Backend/.env.example` - Environment variables template
@@ -216,7 +225,8 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 ## 🎉 Success!
 
-Your application is now live! 
+Your application is now live!
+
 - **Frontend:** https://your-frontend-url.vercel.app
 - **Backend API:** https://your-backend-api.onrender.com
 - **Database:** Managed by Render PostgreSQL
