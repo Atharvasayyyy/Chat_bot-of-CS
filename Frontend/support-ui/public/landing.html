@@ -113,23 +113,62 @@
           <button class="neomorphic-surface px-10 py-5 rounded-2xl text-lg font-medium">Explore Workflow</button>
         </div>
 
-        <div class="mt-24 neomorphic-surface rounded-3xl p-4">
-          <div class="rounded-3xl bg-surface-container-low p-8 lg:p-12">
-            <div class="flex flex-col lg:flex-row gap-6 lg:items-end">
-              <div class="flex-1 neomorphic-inset rounded-2xl p-8 text-left">
-                <h3 class="text-3xl font-medium mb-2" style="font-family: 'Space Grotesk', sans-serif">Merchant Overview</h3>
-                <p class="text-gray-600 mb-8">Live monitoring across 4 regions</p>
-                <div class="space-y-5">
-                  <div class="h-2 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-3/4"></div></div>
-                  <div class="h-2 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-1/2"></div></div>
-                  <div class="h-2 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-4/5"></div></div>
+        <div class="mt-24 neomorphic-surface rounded-3xl p-4 relative overflow-visible">
+          <div class="rounded-3xl bg-surface-container-low p-8 lg:p-12 relative">
+            <div class="absolute right-8 top-6 flex gap-4 z-20">
+              <div class="bg-white rounded-xl px-4 py-3 shadow-md text-left" style="min-width:140px;">
+                <div class="text-xs text-gray-500">FRAUD PREVENTED</div>
+                <div class="text-lg font-bold">₹142,500</div>
+              </div>
+              <div class="bg-white rounded-xl px-4 py-3 shadow-md text-left" style="min-width:120px;">
+                <div class="text-xs text-gray-500">AI CONFIDENCE</div>
+                <div class="text-lg font-bold">99.8%</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
+              <div class="flex-1 neomorphic-inset rounded-2xl p-8 text-left relative">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 class="text-3xl font-medium mb-1" style="font-family: 'Space Grotesk', sans-serif">Merchant Overview</h3>
+                    <p class="text-gray-600">Live monitoring across 4 regions</p>
+                  </div>
+                  <div class="inline-flex items-center gap-3">
+                    <span class="px-3 py-1 rounded-full bg-black text-white text-sm font-semibold">REAL-TIME</span>
+                  </div>
+                </div>
+
+                <div class="mt-6 neomorphic-surface rounded-xl p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="font-semibold">Risk Analysis Engine</div>
+                    <div class="text-sm text-gray-500">REAL-TIME</div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div>
+                      <div class="text-sm text-gray-600 mb-2">Chargeback Risk</div>
+                      <div class="h-3 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-3/4"></div></div>
+                    </div>
+
+                    <div>
+                      <div class="text-sm text-gray-600 mb-2">Policy Compliance</div>
+                      <div class="h-3 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-1/2"></div></div>
+                    </div>
+
+                    <div>
+                      <div class="text-sm text-gray-600 mb-2">Visual Match Confidence</div>
+                      <div class="h-3 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-secondary w-4/5"></div></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="w-full lg:w-72 neomorphic-surface rounded-2xl p-8 text-center">
-                <div class="w-32 h-32 rounded-full border-[12px] border-gray-200 mx-auto relative flex items-center justify-center mb-6">
-                  <div class="absolute inset-0 rounded-full border-[12px] border-secondary border-t-transparent -rotate-45"></div>
-                  <span class="text-3xl font-bold">87%</span>
-                </div>
+
+              <div class="w-full lg:w-72 neomorphic-surface rounded-2xl p-8 text-center flex flex-col items-center justify-center">
+                <svg width="136" height="136" viewBox="0 0 42 42" class="mb-4">
+                  <circle cx="21" cy="21" r="15.91549431" fill="#fff" stroke="#e6e6e6" stroke-width="4"></circle>
+                  <circle cx="21" cy="21" r="15.91549431" fill="transparent" stroke="#2f4360" stroke-width="4" stroke-dasharray="87 13" stroke-dashoffset="25" stroke-linecap="round"></circle>
+                  <text x="21" y="22.2" alignment-baseline="middle" text-anchor="middle" font-size="8" font-weight="700">87%</text>
+                </svg>
                 <p class="text-xl font-medium" style="font-family: 'Space Grotesk', sans-serif">Safe Index</p>
                 <p class="text-gray-600 text-sm">Aggregated health score</p>
               </div>
