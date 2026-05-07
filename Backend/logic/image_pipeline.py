@@ -1,27 +1,67 @@
 # logic/image_pipeline.py
 
-from ultralytics import YOLO
+import logging
+from typing import List, Dict, Optional
 
-# 🔥 Load YOLO model once
-model = YOLO("yolov8n.pt")
+logger = logging.getLogger(__name__)
+
+# Lazy-load YOLO model to avoid import-time failures in constrained environments
+_yolo_model = None
+
+def get_yolo_model():
+    global _yolo_model
+    if _yolo_model is not None:
+        return _yolo_model
+
+    try:
+        from ultralytics import YOLO
+
+        # Attempt to load model; wrap in try/except because loading may fail in some
+        # build environments (torch serialization restrictions, missing libs, etc.).
+        _yolo_model = YOLO("yolov8n.pt")
+        logger.info("YOLO model loaded successfully")
+    except Exception as e:
+        # Log error and continue. The rest of the app will function without vision features.
+        logger.exception("Failed to load YOLO model: %s", e)
+        _yolo_model = None
+
+    return _yolo_model
 
 
 # ==================================================
 # 🔧 YOLO OBJECT DETECTION
 # ==================================================
-def run_yolo(image_path):
+def run_yolo(image_path: str) -> List[Dict]:
+    """Run YOLO detection on the provided image path.
 
-    results = model(image_path)
+    Returns empty list if the model is unavailable or no detections found.
+    """
+    model = get_yolo_model()
+    if model is None:
+        logger.warning("YOLO model unavailable — skipping vision processing")
+        return []
 
-    detections = []
+    try:
+        results = model(image_path)
+    except Exception:
+        logger.exception("Error running YOLO on image: %s", image_path)
+        return []
+
+    detections: List[Dict] = []
 
     for r in results:
-        if r.boxes is None:
+        if getattr(r, 'boxes', None) is None:
             continue
 
         for box in r.boxes:
-            label = model.names[int(box.cls)]
-            confidence = float(box.conf)
+            try:
+                label = model.names[int(box.cls)]
+            except Exception:
+                label = str(getattr(box, 'cls', ''))
+            try:
+                confidence = float(getattr(box, 'conf', 0.0))
+            except Exception:
+                confidence = 0.0
 
             detections.append({
                 "label": label,
