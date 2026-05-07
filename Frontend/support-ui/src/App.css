@@ -1,11 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
 .app-shell {
   min-height: 100vh;
   padding: 24px;
-  background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 28%),
-    radial-gradient(circle at 85% 18%, rgba(14, 165, 233, 0.1), transparent 26%),
-    linear-gradient(180deg, #f8fbff 0%, #eef3f9 54%, #edf2f7 100%);
-  color: #0f172a;
+  background: #fdf8f8;
+  color: #1c1b1b;
+  font-family: "Manrope", sans-serif;
 }
 
 .topbar {
@@ -16,11 +16,10 @@
   padding: 24px 28px;
   margin: 0 auto 24px;
   max-width: 1400px;
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  border: 1px solid #e5e2e1;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  box-shadow: 20px 20px 60px #ebe7e6, -20px -20px 60px #ffffff;
 }
 
 .topbar h1 {
@@ -29,7 +28,8 @@
   font-size: clamp(2rem, 3vw, 3.4rem);
   line-height: 1.03;
   letter-spacing: -0.06em;
-  color: #0f172a;
+  color: #1c1b1b;
+  font-family: "Space Grotesk", sans-serif;
 }
 
 .topbar-nav {
@@ -41,23 +41,23 @@
 .nav-link {
   padding: 12px 16px;
   border-radius: 999px;
-  color: #475569;
+  color: #444748;
   text-decoration: none;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #e5e2e1;
+  background: #ffffff;
   transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
 .nav-link:hover {
   transform: translateY(-1px);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.28);
+  color: #1c1b1b;
+  border-color: #c4c7c7;
 }
 
 .nav-link.active {
-  color: #08111f;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-color: transparent;
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
 }
 
 .app-main {
@@ -92,16 +92,16 @@
 .message-bubble,
 .mini-card,
 .summary-card {
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid #e5e2e1;
   border-radius: 24px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.06);
 }
 
 .hero-card,
 .panel,
 .sidebar {
-  background: rgba(255, 255, 255, 0.9);
-  color: #102033;
+  background: #ffffff;
+  color: #1c1b1b;
 }
 
 .hero-card {
@@ -113,7 +113,8 @@
 .sidebar h3,
 .queue-section h3 {
   margin: 0;
-  color: #0f172a;
+  color: #1c1b1b;
+  font-family: "Space Grotesk", sans-serif;
 }
 
 .section-kicker,
@@ -123,7 +124,7 @@
   letter-spacing: 0.18em;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #455f87;
 }
 
 .muted {
@@ -143,8 +144,8 @@
   gap: 16px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border: 1px solid #dbeafe;
+  background: #f7f3f2;
+  border: 1px solid #e5e2e1;
 }
 
 .stat-pill strong {
@@ -161,7 +162,7 @@
 
 .panel {
   padding: 24px;
-  background: rgba(255, 255, 255, 0.86);
+  background: #ffffff;
 }
 
 .chat-panel {
@@ -191,16 +192,16 @@
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+  background: #000000;
   color: white;
-  box-shadow: 0 14px 28px rgba(29, 78, 216, 0.24);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
 .secondary-button,
 .ghost-button,
 .sidebar-link {
-  background: #e2e8f0;
-  color: #0f172a;
+  background: #f1edec;
+  color: #1c1b1b;
 }
 
 .primary-button:hover,
@@ -223,7 +224,7 @@
 
 .summary-card {
   padding: 18px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  background: #ffffff;
 }
 
 .summary-card strong {
@@ -257,7 +258,7 @@
 }
 
 .sidebar-link.active {
-  background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+  background: #000000;
   color: white;
 }
 
@@ -267,8 +268,8 @@
   gap: 10px;
   padding: 10px;
   border-radius: 22px;
-  background: #f8fbff;
-  border: 1px solid #dbeafe;
+  background: #f7f3f2;
+  border: 1px solid #e5e2e1;
 }
 
 .toggle-chip {
@@ -284,14 +285,14 @@
 
 .toggle-chip:hover {
   transform: translateY(-1px);
-  border-color: #1d4ed8;
-  color: #1d4ed8;
+  border-color: #455f87;
+  color: #455f87;
 }
 
 .toggle-chip.active {
   color: white;
   border-color: transparent;
-  background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+  background: #000000;
 }
 
 .queue-section {
@@ -304,8 +305,8 @@
   gap: 16px;
   padding: 18px;
   border-radius: 24px;
-  border: 1px solid #dbeafe;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #e5e2e1;
+  background: #ffffff;
 }
 
 .wizard-section {
@@ -315,7 +316,7 @@
 
 .wizard-label {
   margin: 0;
-  color: #2563eb;
+  color: #455f87;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.72rem;
@@ -393,7 +394,7 @@
 .table-shell {
   overflow: auto;
   border-radius: 20px;
-  border: 1px solid #dbeafe;
+  border: 1px solid #e5e2e1;
   background: #fff;
 }
 
@@ -404,7 +405,7 @@
 }
 
 .data-table thead {
-  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  background: #f1edec;
 }
 
 .data-table th,
@@ -481,7 +482,7 @@
 .bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+  background: #455f87;
 }
 
 .compact-list {
@@ -599,8 +600,8 @@
   gap: 12px;
   padding: 14px;
   min-height: 460px;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
-  border: 1px solid #dbeafe;
+  background: #f7f3f2;
+  border: 1px solid #e5e2e1;
   border-radius: 24px;
   overflow: auto;
   scroll-behavior: smooth;
@@ -638,7 +639,7 @@
 }
 
 .message-bubble.user {
-  background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+  background: #000000;
   color: white;
 }
 
@@ -664,8 +665,8 @@
   gap: 12px;
   align-items: center;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #dbeafe;
+  background: #ffffff;
+  border: 1px solid #e5e2e1;
   border-radius: 22px;
 }
 
@@ -681,7 +682,7 @@
   outline: none;
   padding: 14px 16px;
   border-radius: 16px;
-  background: #f8fbff;
+  background: #f7f3f2;
   color: #0f172a;
   resize: vertical;
   min-height: 84px;

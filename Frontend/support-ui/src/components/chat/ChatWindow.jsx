@@ -23,7 +23,7 @@ export default function ChatWindow() {
   const [loadingOrders, setLoadingOrders] = useState(false);
 
   const statusText = useMemo(() => {
-    if (step === "user_id") return "Enter user ID";
+    if (step === "user_id") return "(These will be taken from Token) Enter user ID";
     if (step === "order") return "Choose a purchased item";
     if (step === "action") return "Choose a support type";
     return sending ? "Sending" : "Ready";
@@ -157,7 +157,7 @@ export default function ChatWindow() {
         {step === "user_id" && (
           <div className="wizard-section">
             <p className="wizard-label">Step 1</p>
-            <h4>Enter user ID</h4>
+            <h4>(These will be taken from Token) Enter user ID</h4>
             <div className="wizard-row">
               <input
                 className="wizard-input"
