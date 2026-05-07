@@ -28,9 +28,9 @@ services:
       - key: SENDGRID_API_KEY
         sync: false
       - key: FRONTEND_URL
-        value: https://your-frontend-url.vercel.app
+        value: https://customer-support-ui.vercel.app
       - key: ALLOWED_ORIGINS
-        value: http://localhost:3000,http://localhost:5173,https://your-frontend-url.vercel.app
+        value: http://localhost:3000,http://localhost:5173,https://customer-support-ui.vercel.app
 
 databases:
   - name: customer-support-db
