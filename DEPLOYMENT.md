@@ -197,8 +197,8 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 - **Backend:**
   - `Backend/requirements.txt` - Python dependencies
-   - `Backend/render.yaml` - Render configuration
-   - `Backend/Dockerfile` - Forces Python 3.11 for a wheel-based build
+  - `Backend/render.yaml` - Render configuration
+  - `Backend/Dockerfile` - Forces Python 3.11 for a wheel-based build
   - `Backend/.env.example` - Environment variables template
   - Updated `Backend/main.py` - CORS configuration
 
