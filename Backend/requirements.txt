@@ -6,8 +6,7 @@ requests==2.31.0
 sendgrid==6.12.5
 openai>=1.10.0,<2.0.0
 langchain>=0.1.0,<0.2.0
-langchain-openai==0.0.5
-langchain-community==0.0.18
+langchain-community>=0.0.38,<0.1.0
 langchain-text-splitters==0.0.1
 python-dotenv==1.0.0
 ultralytics==8.0.206
