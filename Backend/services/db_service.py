@@ -1,16 +1,42 @@
 # services/db_service.py
 import os
+import logging
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+logger = logging.getLogger(__name__)
+
 def get_connection():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
-    )
+    host = os.getenv("DB_HOST")
+    port = os.getenv("DB_PORT")
+    dbname = os.getenv("DB_NAME")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    
+    if not all([host, port, dbname, user, password]):
+        missing = []
+        if not host: missing.append("DB_HOST")
+        if not port: missing.append("DB_PORT")
+        if not dbname: missing.append("DB_NAME")
+        if not user: missing.append("DB_USER")
+        if not password: missing.append("DB_PASSWORD")
+        
+        error_msg = f"Missing database environment variables: {', '.join(missing)}"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+    
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            dbname=dbname,
+            user=user,
+            password=password
+        )
+        return conn
+    except psycopg2.OperationalError as e:
+        logger.error("Database connection failed: %s", e)
+        raise
 
 def execute_query(query, params=None, fetch_result=False):
     conn = None
@@ -38,16 +64,20 @@ def execute_query(query, params=None, fetch_result=False):
             conn.close()
 
 def fetch_one(query, params=None):
-    conn = get_connection()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        conn = get_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
 
-    cur.execute(query, params)
-    result = cur.fetchone()
+        cur.execute(query, params)
+        result = cur.fetchone()
 
-    cur.close()
-    conn.close()
+        cur.close()
+        conn.close()
 
-    return result
+        return result
+    except Exception as e:
+        logger.exception("fetch_one error: %s", e)
+        raise
 
 def fetch_all(query, params=None):
     try:
@@ -63,7 +93,7 @@ def fetch_all(query, params=None):
         return result
 
     except Exception as e:
-        print("DB Fetch All Error:", e)
+        logger.exception("fetch_all error: %s", e)
         return []
     
     

@@ -37,7 +37,46 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 # ==================================================
-# 🚀 CHAT ENDPOINT (JSON + IMAGE SUPPORT)
+# � HEALTH CHECK ENDPOINT
+# ==================================================
+@app.get("/health")
+def health_check():
+    """
+    Simple health check to verify backend and database are accessible.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Try to execute a simple query
+        result = fetch_one("SELECT 1 as ok")
+        
+        if result:
+            logger.info("✓ Database connection OK")
+            return {
+                "status": "ok",
+                "service": "customer-support-api",
+                "database": "connected"
+            }
+        else:
+            logger.warning("Database query returned no result")
+            return {
+                "status": "degraded",
+                "service": "customer-support-api",
+                "database": "query_empty"
+            }
+    except Exception as e:
+        logger.exception("Health check failed: %s", e)
+        return {
+            "status": "error",
+            "service": "customer-support-api",
+            "database": "disconnected",
+            "error": str(e)
+        }
+
+
+# ==================================================
+# �🚀 CHAT ENDPOINT (JSON + IMAGE SUPPORT)
 # ==================================================
 @app.post("/chat")
 async def chat(request: Request):
