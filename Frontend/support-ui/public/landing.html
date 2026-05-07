@@ -46,6 +46,35 @@
         background: #fdf8f8;
         box-shadow: inset 8px 8px 16px #ebe7e6, inset -8px -8px 16px #ffffff;
       }
+      /* Feedback card styles */
+      .feedback-card {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 48px;
+        border-radius: 28px;
+        background: #ffffff;
+        box-shadow: 20px 30px 80px rgba(14, 12, 12, 0.06);
+      }
+
+      .feedback-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight:700; margin-bottom:8px; }
+      .feedback-sub { color: #7b7a7a; margin-bottom:20px; }
+
+      .feedback-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #efe9e9;
+        background: linear-gradient(180deg, #fffaf9 0%, #fffdfd 100%);
+        box-shadow: inset 8px 8px 20px rgba(235, 228, 227, 0.6);
+        font-size: 1rem;
+        color: #1c1b1b;
+        resize: vertical;
+      }
+
+      .feedback-actions { display:flex; justify-content:center; margin-top:22px; }
+      .feedback-btn { background:#000; color:#fff; padding:12px 28px; border-radius:999px; font-weight:700; border:none; cursor:pointer; }
+      .feedback-note { text-align:center; color:#6f6f6f; margin-top:12px; font-size:0.95rem }
     </style>
   </head>
   <body class="antialiased">
@@ -129,10 +158,85 @@
             <h2 class="text-4xl font-medium mb-4" style="font-family: 'Space Grotesk', sans-serif">Enterprise Capabilities</h2>
             <p class="text-gray-600">Built for scale, engineered for absolute precision.</p>
           </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="neomorphic-surface p-10 rounded-3xl"><h3 class="text-2xl mb-3" style="font-family: 'Space Grotesk', sans-serif">AI Support Agent</h3><p class="text-gray-600">Multimodal agents that handle high-volume support while preserving brand voice.</p></div>
-            <div class="neomorphic-surface p-10 rounded-3xl"><h3 class="text-2xl mb-3" style="font-family: 'Space Grotesk', sans-serif">Knowledge Base</h3><p class="text-gray-600">Dynamic RAG-powered data ingestion from your docs and support history.</p></div>
-            <div class="neomorphic-surface p-10 rounded-3xl"><h3 class="text-2xl mb-3" style="font-family: 'Space Grotesk', sans-serif">Risk Engine</h3><p class="text-gray-600">Proprietary models that score fraud probability in real time.</p></div>
+            <!-- Card 1 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">smart_toy</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">AI Support Agent</h3>
+                  <p class="text-gray-600">Multimodal agents that handle 80% of volume while maintaining 100% brand voice consistency.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">storage</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">Knowledge Base</h3>
+                  <p class="text-gray-600">Dynamic RAG-powered data ingestion from your docs, help center, and historical tickets.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">integration_instructions</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">ReAct Agents</h3>
+                  <p class="text-gray-600">Autonomous reasoning chains that take action across your tech stack via secure tool-calling.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">autorenew</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">Refund Automation</h3>
+                  <p class="text-gray-600">End-to-end refund processing with integrated risk analysis and ledger verification.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">visibility</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">Vision AI</h3>
+                  <p class="text-gray-600">Specialized computer vision for product verification and fraud signal identification.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="neomorphic-surface p-10 rounded-3xl">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px] text-secondary">account_balance</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl mb-2" style="font-family: 'Space Grotesk', sans-serif">Risk Engine</h3>
+                  <p class="text-gray-600">Proprietary scoring models that calculate fraud probability for every interaction in real-time.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -151,6 +255,44 @@
           </div>
         </div>
       </section>
+
+      <!-- Help Us Improve feedback section -->
+      <section class="py-24 bg-surface-container-low">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+          <div class="feedback-card">
+            <div class="text-center">
+              <h3 class="feedback-title">Help Us Improve</h3>
+              <p class="feedback-sub">Have a suggestion? We're constantly evolving based on user feedback.</p>
+            </div>
+
+            <form id="feedbackForm" onsubmit="return false;" class="mt-6">
+              <textarea id="feedbackText" class="feedback-textarea" placeholder="Describe your idea or suggestion..."></textarea>
+              <div class="feedback-actions">
+                <button id="feedbackSubmit" class="feedback-btn">Submit Feedback</button>
+              </div>
+              <p class="feedback-note">We appreciate concise, actionable suggestions — they help us prioritize improvements.</p>
+            </form>
+          </div>
+        </div>
+      </section>
     </main>
+    <script>
+      document.getElementById('feedbackSubmit').addEventListener('click', function(){
+        const text = document.getElementById('feedbackText').value.trim();
+        if(!text){
+          alert('Please enter your suggestion before submitting.');
+          return;
+        }
+        // Basic local acknowledgement. Integrate backend endpoint when available.
+        this.disabled = true;
+        this.innerText = 'Sending...';
+        setTimeout(()=>{
+          alert('Thanks for your feedback!');
+          document.getElementById('feedbackText').value = '';
+          this.disabled = false;
+          this.innerText = 'Submit Feedback';
+        }, 700);
+      });
+    </script>
   </body>
 </html>
