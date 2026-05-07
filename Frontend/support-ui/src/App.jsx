@@ -3,6 +3,7 @@ import ChatPage from "./pages/ChatPage";
 import AdminPage from "./pages/AdminPage";
 import DatabasePage from "./pages/DatabasePage";
 import LandingPage from "./pages/LandingPage";
+import KnowledgeBasePage from "./pages/KnowledgeBasePage";
 
 function SupportLayout() {
   return (
@@ -25,6 +26,9 @@ function SupportLayout() {
           <NavLink to="/database" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link") }>
             Database
           </NavLink>
+          <NavLink to="/knowledge-base" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link") }>
+            KB
+          </NavLink>
         </nav>
       </header>
 
@@ -33,6 +37,7 @@ function SupportLayout() {
           <Route path="chat" element={<ChatPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="database" element={<DatabasePage />} />
+          <Route path="knowledge-base" element={<KnowledgeBasePage />} />
           <Route path="*" element={<Navigate to="/chat" replace />} />
         </Routes>
       </main>
