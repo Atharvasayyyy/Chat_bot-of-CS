@@ -241,6 +241,53 @@
         </div>
       </section>
 
+      <!-- Vision AI Showcase -->
+      <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <p class="text-sm text-secondary/80 mb-3">Proprietary Vision AI</p>
+              <h2 class="text-4xl font-medium mb-4" style="font-family: 'Space Grotesk', sans-serif">Spot AI-Generated Images in Seconds</h2>
+              <p class="text-gray-600 mb-6">Fraudsters are now using Stable Diffusion and Midjourney to create "fake damage" photos. Wholphin's neural network detects synthetic textures and inconsistent lighting that human eyes miss.</p>
+
+              <ul class="space-y-4 text-gray-700">
+                <li class="flex items-start gap-3"><span class="material-symbols-outlined text-secondary">check_circle</span><div><strong>Texture Analysis</strong><div class="text-sm text-gray-600">Detecting latent noise patterns characteristic of AI diffusion models.</div></div></li>
+                <li class="flex items-start gap-3"><span class="material-symbols-outlined text-secondary">check_circle</span><div><strong>EXIF Metadata Scrubbing</strong><div class="text-sm text-gray-600">Cross-referencing device fingerprints and GPS data for anomalies.</div></div></li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="neomorphic-surface rounded-3xl p-6">
+                <div class="rounded-2xl overflow-hidden bg-gradient-to-b from-gray-100 to-gray-200 p-6">
+                  <div class="w-full h-64 bg-white rounded-lg flex items-center justify-center mb-4">
+                    <!-- Placeholder image / card -->
+                    <svg width="200" height="140" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="200" height="140" rx="12" fill="#f3f3f3" />
+                      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#c4c4c4">Image Preview</text>
+                    </svg>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div class="text-sm text-gray-500">CONFIDENCE</div>
+                      <div class="text-xl font-bold">94.2%</div>
+                    </div>
+                    <div class="text-center p-3 bg-white rounded-lg shadow-sm border-2 border-red-50">
+                      <div class="text-sm text-gray-500">AI DETECTED</div>
+                      <div class="text-xl font-bold text-red-600">YES</div>
+                    </div>
+                    <div class="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div class="text-sm text-gray-500">DAMAGE AUTH</div>
+                      <div class="text-xl font-bold">FAIL</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="py-24">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
           <div class="neomorphic-surface bg-black text-white rounded-[48px] p-12 lg:p-20 text-center">
@@ -276,6 +323,61 @@
         </div>
       </section>
     </main>
+      <!-- Footer -->
+      <footer class="bg-surface-container-low py-12">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <svg class="h-8 w-8" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wholphin logo">
+                  <rect x="2" y="2" width="60" height="60" rx="14" fill="#000000" />
+                  <path d="M16 36C22 27.5 30.5 23 40 23C45 23 49 24.5 52 27.5C49.2 27 46.8 27.4 44.8 28.6C42.6 29.9 40.7 32 39 34.7C36.3 38.8 32.5 41.2 27.6 42C24 42.5 20.1 42.2 16 41V36Z" fill="#FFFFFF" />
+                </svg>
+                <span class="font-bold">Wholphin</span>
+              </div>
+              <p class="text-sm text-gray-600">Securing the future of global e-commerce through multimodal artificial intelligence.</p>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-3">Product</h4>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li>AI Agents</li>
+                <li>Vision Engine</li>
+                <li>Fraud Analytics</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-3">Company</h4>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li>About Us</li>
+                <li>Solutions</li>
+                <li>Security</li>
+                <li>Contribute</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-3">Legal</h4>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li>Privacy</li>
+                <li>Terms</li>
+                <li>Cookie Policy</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-100 pt-6 text-center text-sm text-gray-500">
+            © 2024 Wholphin AI. All rights reserved.
+            <div class="mt-3 flex justify-center gap-4">
+              <a class="text-gray-500">Twitter</a>
+              <a class="text-gray-500">LinkedIn</a>
+              <a class="text-gray-500" href="https://github.com/Atharvasayyyy/Chat_bot-of-CS" target="_blank">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     <script>
       document.getElementById('feedbackSubmit').addEventListener('click', function(){
         const text = document.getElementById('feedbackText').value.trim();
