@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: customer-support-api
+    runtime: python
+    plan: free
+    rootDir: Backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DB_HOST
+        fromDatabase:
+          name: customer-support-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: customer-support-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: customer-support-db
+          property: dbname
+      - key: DB_USER
+        fromDatabase:
+          name: customer-support-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: customer-support-db
+          property: password
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://your-frontend-url.vercel.app
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000,http://localhost:5173,https://your-frontend-url.vercel.app
+
+databases:
+  - name: customer-support-db
+    plan: free

@@ -38,8 +38,8 @@ This guide walks you through deploying your Customer Support application to prod
    - **Name:** `customer-support-api`
    - **Region:** Choose closest to you (or default)
    - **Branch:** `main`
-   - **Runtime:** `Docker`
-   - **Dockerfile Path:** `Backend/Dockerfile`
+   - **Runtime:** `Python 3`
+   - **Python Version:** `3.11.9`
    - **Plan:** Free (or Pro for better performance)
 
 6. Click **Advanced** to add **Environment Variables:**
@@ -197,8 +197,9 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 - **Backend:**
   - `Backend/requirements.txt` - Python dependencies
-  - `Backend/render.yaml` - Render configuration
-  - `Backend/Dockerfile` - Forces Python 3.11 for a wheel-based build
+   - `render.yaml` - Root Render blueprint that Render reads automatically
+   - `Backend/render.yaml` - Legacy copy of the Render config
+   - `Backend/Dockerfile` - Optional fallback if you ever switch to Docker
   - `Backend/.env.example` - Environment variables template
   - Updated `Backend/main.py` - CORS configuration
 
