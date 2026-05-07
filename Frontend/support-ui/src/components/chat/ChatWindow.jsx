@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { getUserOrders, sendMessage } from "../../services/api";
+import { useEffect, useMemo, useState } from "react";
+import { getUserOrders, sendMessage, checkBackendHealth } from "../../services/api";
 import Message from "./Message";
 import InputBox from "./InputBox";
 
@@ -21,6 +21,21 @@ export default function ChatWindow() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedAction, setSelectedAction] = useState("");
   const [loadingOrders, setLoadingOrders] = useState(false);
+
+  // Check backend health on mount
+  useEffect(() => {
+    checkBackendHealth()
+      .then((res) => {
+        if (res.data.status !== "ok") {
+          console.warn("Backend health check returned non-ok status:", res.data);
+          setError(`Backend status: ${res.data.status}. ${res.data.error || ""}`);
+        }
+      })
+      .catch((err) => {
+        console.error("Backend health check failed:", err);
+        setError(`Backend unavailable: ${err.message}`);
+      });
+  }, []);
 
   const statusText = useMemo(() => {
     if (step === "user_id") return "(These will be taken from Token) Enter user ID";

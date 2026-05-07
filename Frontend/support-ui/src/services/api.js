@@ -23,4 +23,6 @@ export const updateExchange = (id, status) =>
     params: { exchange_id: id, status },
   });
 
+export const checkBackendHealth = () => API.get("/health");
+
 export default API;
