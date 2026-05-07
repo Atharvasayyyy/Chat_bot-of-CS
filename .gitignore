@@ -48,3 +48,4 @@ temp/
 *.sqlite3
 .env.local
 yolov8n.pt
+sendgrid.env

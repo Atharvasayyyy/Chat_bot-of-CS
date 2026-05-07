@@ -81,13 +81,14 @@ def heuristic_fake_detection(image_path):
 # ==================================================
 def validate_image(image_path):
     score = 0
+    suspicious_message = "Image appears to be edited, AI-generated, or unclear. Please upload a real product photo."
 
     # 1. Basic check
     basic = basic_check(image_path)
     if basic != "ok":
         return {
             "type": "image_rejected",
-            "message": "Image quality is too low or invalid."
+            "message": suspicious_message
         }
 
     # 2. Metadata check
@@ -108,7 +109,7 @@ def validate_image(image_path):
     if score >= 3:
         return {
             "type": "image_fake",
-            "message": "This image appears to be AI-generated or edited. Please upload a real photo."
+            "message": suspicious_message
         }
 
     return {

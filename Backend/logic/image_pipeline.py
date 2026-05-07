@@ -36,6 +36,8 @@ def run_yolo(image_path):
 # ==================================================
 def process_image(image_path):
 
+    suspicious_message = "Image appears to be edited, AI-generated, or unclear. Please upload a real product photo."
+
     print("📸 Processing image:", image_path)
 
     detections = run_yolo(image_path)
@@ -68,10 +70,10 @@ def process_image(image_path):
     if confidence < 0.4:
         return {
             "type": "image_ok",
-            "object": label,
+            "object": None,
             "confidence": confidence,
             "damage_detected": False,
-            "message": "Image is unclear. Please upload a clearer image."
+            "message": suspicious_message
         }
 
     # ==================================================

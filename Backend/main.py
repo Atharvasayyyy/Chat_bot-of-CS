@@ -159,15 +159,20 @@ def get_orders_by_user(user_id: str):
 def update_ticket(ticket_id: int, status: str):
 
     ticket = fetch_one(
-        "SELECT user_id, order_id FROM tickets WHERE ticket_id = %s",
+        "SELECT order_id FROM tickets WHERE ticket_id = %s",
         (ticket_id,)
     )
 
     if not ticket:
         return {"message": "Ticket not found"}
 
-    user_id = ticket["user_id"]
     order_id = ticket["order_id"]
+
+    order = fetch_one(
+        "SELECT user_id FROM orders WHERE order_id = %s",
+        (order_id,)
+    )
+    user_id = order["user_id"] if order else None
 
     # 🔥 Update status
     execute_query(
@@ -178,7 +183,7 @@ def update_ticket(ticket_id: int, status: str):
     # ==================================================
     # 🔥 AUTO REFUND ON APPROVAL
     # ==================================================
-    if status == "APPROVED":
+    if status == "APPROVED" and user_id:
 
         refund_result = process_refund.run({
             "user_id": user_id,
@@ -190,6 +195,12 @@ def update_ticket(ticket_id: int, status: str):
             "type": "refund_processed",
             "message": "Ticket approved & refund processed",
             "refund": refund_result
+        }
+
+    if status == "APPROVED" and not user_id:
+        return {
+            "type": "ticket_update",
+            "message": "Ticket approved, but refund could not be auto-processed (missing user mapping)."
         }
 
     return {

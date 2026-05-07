@@ -216,12 +216,16 @@ def handle_request(
     if image_path:
 
         validation = validate_image(image_path)
+        suspicious_message = validation.get(
+            "message",
+            "Image appears to be edited, AI-generated, or unclear. Please upload a real product photo."
+        )
 
         if validation.get("type") == "image_rejected":
-            return validation["message"]
+            return suspicious_message
 
         if validation.get("type") == "image_fake":
-            return validation["message"]
+            return suspicious_message
 
         print("📸 Processing image:", image_path)
 
@@ -231,7 +235,7 @@ def handle_request(
 
         # 🔥 ONLY BLOCK IF OBJECT MISSING
         if not image_data.get("object"):
-            return "Please upload a clearer image."
+            return suspicious_message
 
     # ==================================================
     # 🔥 PRODUCT EXTRACTION
@@ -348,6 +352,9 @@ def handle_request(
         )
 
         if detected and not is_match:
+            if image_data.get("confidence", 0) < 0.4:
+                return suspicious_message
+
             return (
                 f"Image does not match {product}. "
                 f"Detected: {detected}. "

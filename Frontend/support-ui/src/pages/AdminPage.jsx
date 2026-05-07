@@ -31,6 +31,12 @@ export default function AdminPage() {
 
   useEffect(() => {
     loadDashboard();
+
+    const intervalId = setInterval(() => {
+      loadDashboard();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const summary = useMemo(

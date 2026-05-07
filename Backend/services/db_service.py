@@ -12,18 +12,30 @@ def get_connection():
         password=os.getenv("DB_PASSWORD")
     )
 
-def execute_query(query, params=None):
+def execute_query(query, params=None, fetch_result=False):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(query, params)
-        conn.commit()
 
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print("DB Error:", e)
+        result = None
+        if fetch_result:
+            result = cursor.fetchone()
+
+        conn.commit()
+        return result if fetch_result else cursor.rowcount
+    except Exception:
+        if conn:
+            conn.rollback()
+        raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 def fetch_one(query, params=None):
     conn = get_connection()
