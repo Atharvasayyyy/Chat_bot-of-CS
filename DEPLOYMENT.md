@@ -197,9 +197,10 @@ VITE_API_BASE_URL=https://your-backend-render.onrender.com
 
 - **Backend:**
   - `Backend/requirements.txt` - Python dependencies
-   - `render.yaml` - Root Render blueprint that Render reads automatically
-   - `Backend/render.yaml` - Legacy copy of the Render config
-   - `Backend/Dockerfile` - Optional fallback if you ever switch to Docker
+   - `Backend/.python-version` - Pins Render to Python 3.11.9 in the backend root
+  - `render.yaml` - Root Render blueprint that Render reads automatically
+  - `Backend/render.yaml` - Legacy copy of the Render config
+  - `Backend/Dockerfile` - Optional fallback if you ever switch to Docker
   - `Backend/.env.example` - Environment variables template
   - Updated `Backend/main.py` - CORS configuration
 
