@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://customer-support-api.onrender.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://chat-bot-of-cs-1.onrender.com",
   timeout: 5000,
 });
 

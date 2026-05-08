@@ -15,15 +15,22 @@ app = FastAPI()
 # 🌐 CORS (FOR REACT)
 # ==================================================
 # Get allowed origins from environment or use defaults
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:3000,http://localhost:5173",
+    ).split(",")
+    if origin.strip()
+]
 # Always allow the frontend URL if provided
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
-    allowed_origins.append(frontend_url)
+    allowed_origins.append(frontend_url.strip().rstrip("/"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=list(set(allowed_origins)),  # Remove duplicates
+    allow_origins=sorted(set(allowed_origins)),  # Remove duplicates
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
