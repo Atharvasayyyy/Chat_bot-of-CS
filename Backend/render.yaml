@@ -28,9 +28,9 @@ services:
       - key: SENDGRID_API_KEY
         sync: false
       - key: FRONTEND_URL
-        value: https://chat-bot-ne27mrfe2-atharvasable1204-gmailcoms-projects.vercel.app
+        value: https://chat-bot-5gvuq3vu7-atharvasable1204-gmailcoms-projects.vercel.app
       - key: ALLOWED_ORIGINS
-        value: http://localhost:3000,http://localhost:5173,https://chat-bot-ne27mrfe2-atharvasable1204-gmailcoms-projects.vercel.app
+        value: http://localhost:3000,http://localhost:5173,https://chat-bot-5gvuq3vu7-atharvasable1204-gmailcoms-projects.vercel.app
 
 databases:
   - name: customer-support-db
