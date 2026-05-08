@@ -28,6 +28,9 @@ frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
     allowed_origins.append(frontend_url.strip().rstrip("/"))
 
+for port in (3000, 5173):
+    allowed_origins.append(f"http://127.0.0.1:{port}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=sorted(set(allowed_origins)),  # Remove duplicates
@@ -35,6 +38,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def root():
+    return {
+        "service": "customer-support-api",
+        "status": "ok",
+        "endpoints": [
+            "/health",
+            "/chat",
+            "/dashboard",
+            "/database",
+            "/orders/{user_id}",
+            "/admin/ticket/update",
+            "/admin/exchange/update",
+            "/profile",
+        ],
+    }
 
 # ==================================================
 # 📂 IMAGE STORAGE
@@ -81,6 +102,19 @@ def health_check():
             "error": str(e)
         }
 
+
+# ==================================================
+# 🔐 PROFILE (LIGHTWEIGHT)
+# ==================================================
+@app.get("/profile")
+def profile():
+    # Minimal profile endpoint to support frontend profile-refresh logic.
+    # Returns no user when unauthenticated; frontends can adapt accordingly.
+    return {
+        "user": None,
+        "authenticated": False,
+        "message": "No active session"
+    }
 
 # ==================================================
 # �🚀 CHAT ENDPOINT (JSON + IMAGE SUPPORT)
@@ -209,7 +243,7 @@ def get_orders_by_user(user_id: str):
 # 🎫 TICKET UPDATE (ADMIN)
 # ==================================================
 @app.post("/admin/ticket/update")
-def update_ticket(ticket_id: int, status: str):
+def update_ticket(ticket_id: str, status: str):
 
     ticket = fetch_one(
         "SELECT order_id FROM tickets WHERE ticket_id = %s",

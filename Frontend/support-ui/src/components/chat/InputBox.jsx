@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function InputBox({ onSend, disabled = false }) {
+export default function InputBox({ onSend, disabled = false, placeholder = "Describe the issue..." }) {
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
 
@@ -42,7 +42,7 @@ export default function InputBox({ onSend, disabled = false }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Describe the issue..."
+          placeholder={placeholder}
         />
 
         <div className="composer-footer">

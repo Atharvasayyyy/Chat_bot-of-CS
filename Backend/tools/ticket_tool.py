@@ -1,4 +1,5 @@
 from langchain.tools import tool
+from uuid import uuid4
 from services.db_service import execute_query, fetch_one
 from services.email_service import send_email
 
@@ -13,13 +14,22 @@ def _ensure_ticket_columns():
     execute_query("ALTER TABLE tickets ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 
 
-def _get_next_ticket_id():
-    row = fetch_one("SELECT COALESCE(MAX(ticket_id), 0) + 1 AS next_ticket_id FROM tickets")
-    return int(row["next_ticket_id"]) if row and row.get("next_ticket_id") is not None else 1
+def _generate_ticket_id() -> str:
+    return str(uuid4())
 
 
 @tool
-def create_ticket(user_id: str, order_id: str, issue: str, priority: str) -> str:
+def create_ticket(
+    user_id: str,
+    order_id: str,
+    issue: str,
+    priority: str,
+    customer_id: str = None,
+    image_url: str = None,
+    ai_verdict: str = None,
+    confidence: float = None,
+    refund_amount: float = None,
+) -> str:
     """
     Create a support ticket for high-risk cases.
 
@@ -28,6 +38,11 @@ def create_ticket(user_id: str, order_id: str, issue: str, priority: str) -> str
         order_id (str)
         issue (str)
         priority (str)
+        customer_id (str, optional)
+        image_url (str, optional)
+        ai_verdict (str, optional)
+        confidence (float, optional)
+        refund_amount (float, optional)
 
     Returns:
         str
@@ -41,14 +56,29 @@ def create_ticket(user_id: str, order_id: str, issue: str, priority: str) -> str
 
     # Persist first; only return success when insertion actually works.
     try:
-        ticket_id = _get_next_ticket_id()
+        ticket_id = _generate_ticket_id()
         created_ticket = execute_query(
             """
-            INSERT INTO tickets (ticket_id, user_id, order_id, issue, status, priority)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO tickets (
+                ticket_id, user_id, order_id, issue, status, priority,
+                customer_id, image_url, ai_verdict, confidence, refund_amount, created_at
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
             RETURNING ticket_id, status, priority
             """,
-            (ticket_id, user_id, order_id, issue, "UNDER_REVIEW", priority),
+            (
+                ticket_id,
+                user_id,
+                order_id,
+                issue,
+                "UNDER_REVIEW",
+                priority,
+                customer_id or user_id,
+                image_url,
+                ai_verdict,
+                confidence,
+                refund_amount,
+            ),
             fetch_result=True,
         )
     except Exception as exc:

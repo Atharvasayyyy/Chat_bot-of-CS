@@ -21,6 +21,7 @@ export default function ChatWindow() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedAction, setSelectedAction] = useState("");
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [isGeneralQuery, setIsGeneralQuery] = useState(false);
 
   // Check backend health on mount
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function ChatWindow() {
 
   const statusText = useMemo(() => {
     if (step === "user_id") return "(These will be taken from Token) Enter user ID";
+    if (step === "query_type") return "Choose query type";
     if (step === "order") return "Choose a purchased item";
     if (step === "action") return "Choose a support type";
     return sending ? "Sending" : "Ready";
@@ -64,13 +66,8 @@ export default function ChatWindow() {
       const res = await getUserOrders(cleanedUserId);
       const userOrders = res.data.orders || [];
       setOrders(userOrders);
-      setStep("order");
-
-      if (userOrders.length === 0) {
-        addBotMessage("No purchases were found for this user ID.");
-      } else {
-        addBotMessage("Select the product you want help with.");
-      }
+      setStep("query_type");
+      addBotMessage("What would you like to do? Ask a general question or get help with a specific order?");
     } catch (requestError) {
       setError(requestError?.response?.data?.message || requestError?.message || "Unable to load user orders.");
       setOrders([]);
@@ -78,6 +75,17 @@ export default function ChatWindow() {
     } finally {
       setLoadingOrders(false);
       setSending(false);
+    }
+  };
+
+  const handleQueryTypeSelect = (isGeneral) => {
+    setIsGeneralQuery(isGeneral);
+    if (isGeneral) {
+      setStep("general_query");
+      addBotMessage("Sure! What would you like to know?");
+    } else {
+      setStep("order");
+      addBotMessage("Select the product you need help with.");
     }
   };
 
@@ -90,27 +98,49 @@ export default function ChatWindow() {
 
   const handleActionSelect = (action) => {
     setSelectedAction(action);
-    setStep("compose");
-
-    const label = actionOptions.find((item) => item.key === action)?.label || action;
-    addBotMessage(`You chose **${label}** for **${selectedOrder?.product_name || "your item"}**. Type the details and send your message.`);
+    if (action === "query") {
+      setStep("query");
+      addBotMessage(`You can now ask your question about **${selectedOrder?.product_name || "your item"}**. What would you like to know?`);
+    } else {
+      setStep("compose");
+      const label = actionOptions.find((item) => item.key === action)?.label || action;
+      addBotMessage(`You chose **${label}** for **${selectedOrder?.product_name || "your item"}**. Type the details and send your message.`);
+    }
   };
 
   const handleSend = async (text, file) => {
     const messageText = text.trim();
     if (!messageText && !file) return;
 
-    if (!activeUserId || !selectedOrder || !selectedAction) {
-      setError("Please select a user, item, and action before sending.");
+    if (!activeUserId) {
+      setError("Please enter a user ID first.");
+      return;
+    }
+
+    if (!isGeneralQuery && !selectedOrder) {
+      setError("Please select an item before sending.");
+      return;
+    }
+
+    // For general queries, action is "query", for others we need selectedAction
+    if (!isGeneralQuery && !selectedAction) {
+      setError("Please select an action type before sending.");
       return;
     }
 
     const formData = new FormData();
     formData.append("user_id", activeUserId);
     formData.append("message", messageText);
-    formData.append("selected_order_id", selectedOrder.order_id);
-    formData.append("selected_product", selectedOrder.product_name);
-    formData.append("selected_action", selectedAction);
+    
+    if (selectedOrder) {
+      formData.append("selected_order_id", selectedOrder.order_id);
+      formData.append("selected_product", selectedOrder.product_name);
+      formData.append("selected_action", selectedAction || "query");
+    } else {
+      // General query - no specific order
+      formData.append("selected_action", "query");
+    }
+
     if (file) formData.append("image", file);
 
     // Add user message to chat
@@ -138,7 +168,7 @@ export default function ChatWindow() {
       ]);
     } catch (err) {
       const backendMessage =
-        err?.response?.data?.message || err?.response?.data?.detail || "Backend is unavailable right now.";
+        err?.response?.data?.message || err?.response?.data?.detail || "An error occurred while processing your request.";
 
       setError(backendMessage);
       setMessages((prev) => [
@@ -160,7 +190,7 @@ export default function ChatWindow() {
           <p className="section-kicker">Assistant</p>
           <h3>Guided support intake</h3>
           <p className="muted">
-            Enter the user ID, pick a purchased item, then choose refund, exchange, query, or other.
+            Enter your user ID, select a purchased item, then ask your question or request a refund/exchange.
           </p>
         </div>
         <span className={sending ? "status-dot sending" : "status-dot"}>
@@ -208,9 +238,32 @@ export default function ChatWindow() {
           </div>
         )}
 
-        {step === "order" && (
+        {step === "query_type" && (
           <div className="wizard-section">
             <p className="wizard-label">Step 2</p>
+            <h4>How can we help?</h4>
+            <div className="prompt-row">
+              <button className="prompt-chip" onClick={() => handleQueryTypeSelect(true)}>
+                General Question
+              </button>
+              <button className="prompt-chip" onClick={() => handleQueryTypeSelect(false)}>
+                Help with an Order
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === "general_query" && (
+          <div className="wizard-section">
+            <p className="wizard-label">Step 3</p>
+            <h4>Ask your question</h4>
+            <InputBox onSend={handleSend} disabled={sending} placeholder="Ask any question..." />
+          </div>
+        )}
+
+        {step === "order" && (
+          <div className="wizard-section">
+            <p className="wizard-label">Step 3</p>
             <h4>Choose one of the purchased items</h4>
             <div className="order-grid">
               {orders.map((order) => (
@@ -227,8 +280,8 @@ export default function ChatWindow() {
 
         {step === "action" && (
           <div className="wizard-section">
-            <p className="wizard-label">Step 3</p>
-            <h4>Select the top request</h4>
+            <p className="wizard-label">Step 4</p>
+            <h4>What do you need help with?</h4>
             <div className="prompt-row">
               {actionOptions.map((action) => (
                 <button key={action.key} className="prompt-chip" onClick={() => handleActionSelect(action.key)}>
@@ -239,10 +292,18 @@ export default function ChatWindow() {
           </div>
         )}
 
-        {step === "compose" && selectedOrder && selectedAction && (
+        {step === "query" && selectedOrder && (
           <div className="wizard-section">
             <p className="wizard-label">Step 4</p>
-            <h4>Describe the issue and send the request</h4>
+            <h4>Ask your question about <strong>{selectedOrder.product_name}</strong></h4>
+            <InputBox onSend={handleSend} disabled={sending} placeholder="What would you like to know about this item?" />
+          </div>
+        )}
+
+        {step === "compose" && selectedOrder && selectedAction && (
+          <div className="wizard-section">
+            <p className="wizard-label">Step 5</p>
+            <h4>Describe the issue for <strong>{selectedOrder.product_name}</strong></h4>
             <InputBox onSend={handleSend} disabled={sending} />
           </div>
         )}

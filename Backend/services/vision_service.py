@@ -1,8 +1,12 @@
 # services/vision_service.py
 
 import os
-from PIL import Image
+from PIL import Image, ImageFilter
 from PIL.ExifTags import TAGS
+import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ==================================================
@@ -62,12 +66,46 @@ def check_metadata(image_path):
 def heuristic_fake_detection(image_path):
     try:
         img = Image.open(image_path).convert("RGB")
-        pixels = list(img.getdata())
 
-        # 🔍 Check color variation (AI images often too smooth)
-        unique_colors = len(set(pixels))
+        # 1) Unique color count — AI images sometimes have limited palettes
+        try:
+            colors = img.getcolors(maxcolors=1000000)
+            unique_colors = len(colors) if colors else 0
+        except Exception:
+            unique_colors = 0
 
-        if unique_colors < 500:
+        # 2) Entropy (grayscale) — very low entropy suggests synthetic image
+        try:
+            gray = img.convert("L")
+            hist = gray.histogram()
+            total = sum(hist) or 1
+            probs = [h / total for h in hist if h > 0]
+            entropy = -sum(p * math.log2(p) for p in probs)
+        except Exception:
+            entropy = 0
+
+        # 3) Edge density — synthetic images can be overly smooth
+        try:
+            edges = gray.filter(ImageFilter.FIND_EDGES)
+            bw = edges.point(lambda p: 255 if p > 30 else 0)
+            nonzero = sum(1 for px in bw.getdata() if px > 0)
+            edge_density = nonzero / (bw.width * bw.height)
+        except Exception:
+            edge_density = 0
+
+        logger.debug(
+            "vision heuristics: unique_colors=%s entropy=%.2f edge_density=%.4f",
+            unique_colors, entropy, edge_density,
+        )
+
+        # Heuristic thresholds (tuned to be conservative - may be adjusted)
+        if unique_colors and unique_colors < 2000:
+            return "ai_like"
+
+        if entropy and entropy < 4.5:
+            return "ai_like"
+
+        if edge_density and edge_density < 0.01:
             return "ai_like"
 
         return "ok"
@@ -91,21 +129,22 @@ def validate_image(image_path):
             "message": suspicious_message
         }
 
-    # 2. Metadata check
+    # 2. Metadata check (missing metadata is a strong signal)
     meta = check_metadata(image_path)
     if meta == "no_metadata":
-        score += 1
-    elif meta == "edited":
         score += 2
+    elif meta == "edited":
+        score += 3
 
-    # 3. Heuristic check
+    # 3. Heuristic check (color/entropy/edges)
     heuristic = heuristic_fake_detection(image_path)
     if heuristic == "ai_like":
-        score += 2
+        score += 3
 
     # ==================================================
     # 🎯 DECISION LOGIC
     # ==================================================
+    # Lower the threshold: stronger signals are required to accept an image.
     if score >= 3:
         return {
             "type": "image_fake",

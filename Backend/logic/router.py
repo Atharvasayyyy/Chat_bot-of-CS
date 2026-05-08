@@ -13,7 +13,7 @@ from tools.refund_tool import process_refund
 from tools.exchange_tool import create_exchange
 from tools.ticket_tool import create_ticket
 
-from services.db_service import fetch_one
+from services.db_service import fetch_one, execute_query
 from services.vision_service import validate_image
 
 import re
@@ -145,6 +145,28 @@ def is_duplicate_order(order):
 
 
 # ==================================================
+# 🔄 UPDATE ORDER STATUS
+# ==================================================
+
+def update_order_status(order_id, new_status):
+    """Update the order status in the database"""
+    try:
+        execute_query(
+            """
+            UPDATE orders
+            SET status = %s
+            WHERE order_id = %s
+            """,
+            (new_status, order_id)
+        )
+        print(f"✅ Order {order_id} status updated to: {new_status}")
+        return True
+    except Exception as e:
+        print(f"❌ Error updating order status: {e}")
+        return False
+
+
+# ==================================================
 # 🔥 QUERY PROTECTION
 # ==================================================
 
@@ -233,8 +255,11 @@ def handle_request(
 
         print("🧠 Image Data:", image_data)
 
+        if image_data.get("type") == "vision_unavailable":
+            image_data = None
+
         # 🔥 ONLY BLOCK IF OBJECT MISSING
-        if not image_data.get("object"):
+        if image_data and not image_data.get("object"):
             return suspicious_message
 
     # ==================================================
@@ -316,6 +341,10 @@ def handle_request(
             return "Please specify the product."
 
         response = query_flow(clean_input)
+
+        # Update order status if a specific order was selected
+        if selected_order_id:
+            update_order_status(selected_order_id, "query_answered")
 
         update_state(
             user_id,
@@ -442,6 +471,9 @@ Status: {order['status']}
                 "reason": "Damaged product"
             })
 
+            # Update order status to refunded
+            update_order_status(order_id, "refunded")
+
             update_state(
                 user_id,
                 awaiting_product=False,
@@ -451,12 +483,38 @@ Status: {order['status']}
             return result
 
         # HIGH/MEDIUM → TICKET
+        # ensure ai_verdict is a string and confidence is a float to satisfy validators
+        ai_verdict_val = ""
+        confidence_val = 0.0
+        if image_data:
+            ai_verdict_val = str(image_data.get("object") or "")
+            try:
+                confidence_val = float(image_data.get("confidence") or 0.0)
+            except Exception:
+                confidence_val = 0.0
+
+        refund_val = 0.0
+        try:
+            refund_val = float(order["price"]) if order and order.get("price") is not None else 0.0
+        except Exception:
+            refund_val = 0.0
+
+        image_url_val = str(image_path) if image_path else ""
+
         result = create_ticket.run({
             "user_id": user_id,
             "order_id": order_id,
             "issue": clean_input,
-            "priority": "HIGH" if risk == "high" else "MEDIUM"
+            "priority": "HIGH" if risk == "high" else "MEDIUM",
+            "customer_id": user_id,
+            "image_url": image_url_val,
+            "ai_verdict": ai_verdict_val,
+            "confidence": confidence_val,
+            "refund_amount": refund_val,
         })
+
+        # Update order status to pending refund
+        update_order_status(order_id, "pending_refund")
 
         update_state(
             user_id,
@@ -544,6 +602,9 @@ Status: {order['status']}
             "order_id": order_id,
             "new_product": product
         })
+
+        # Update order status to exchanged
+        update_order_status(order_id, "exchanged")
 
         update_state(
             user_id,

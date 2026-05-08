@@ -20,6 +20,9 @@ def get_yolo_model():
         # build environments (torch serialization restrictions, missing libs, etc.).
         _yolo_model = YOLO("yolov8n.pt")
         logger.info("YOLO model loaded successfully")
+    except ModuleNotFoundError:
+        logger.warning("ultralytics is not installed; vision processing is disabled")
+        _yolo_model = None
     except Exception as e:
         # Log error and continue. The rest of the app will function without vision features.
         logger.exception("Failed to load YOLO model: %s", e)
@@ -79,6 +82,15 @@ def process_image(image_path):
     suspicious_message = "Image appears to be edited, AI-generated, or unclear. Please upload a real product photo."
 
     print("📸 Processing image:", image_path)
+
+    if get_yolo_model() is None:
+        return {
+            "type": "vision_unavailable",
+            "object": None,
+            "confidence": 0.0,
+            "damage_detected": False,
+            "message": "Image vision is temporarily unavailable. Please continue with text details."
+        }
 
     detections = run_yolo(image_path)
 
