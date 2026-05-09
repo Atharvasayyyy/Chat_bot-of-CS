@@ -87,7 +87,7 @@ Notification (SendGrid)          → customer + merchant informed
 
 ## 🧠 AI Architecture
 
-<img src="./assets/demo.gif" alt="Customer Support AI Demo" width="70" />
+<img src="./assets/demo.gif" alt="Customer Support AI Demo" width="200" />
 
 The system uses a **ReAct Agent** architecture with tools, reasoning, and direct database interaction.
 
