@@ -23,13 +23,13 @@ Today, many e-commerce support systems still depend heavily on **manual review p
 
 This creates:
 
-| Pain Point | Impact |
-|---|---|
-| 🔴 Manual ticket handling | Slow resolution, inconsistent decisions |
-| 🔴 AI-generated fake damage images | Refund fraud & operational losses |
-| 🔴 Scattered support channels | No unified view for agents |
-| 🔴 Complex refund/exchange rules | Error-prone manual workflows |
-| 🔴 Overloaded support teams | Poor customer experience |
+| Pain Point                         | Impact                                  |
+| ---------------------------------- | --------------------------------------- |
+| 🔴 Manual ticket handling          | Slow resolution, inconsistent decisions |
+| 🔴 AI-generated fake damage images | Refund fraud & operational losses       |
+| 🔴 Scattered support channels      | No unified view for agents              |
+| 🔴 Complex refund/exchange rules   | Error-prone manual workflows            |
+| 🔴 Overloaded support teams        | Poor customer experience                |
 
 ---
 
@@ -58,6 +58,7 @@ Notification (SendGrid)          → customer + merchant informed
 ## 🚀 Features
 
 ### 💬 Customer-Facing
+
 - Multi-turn chat interface with guided wizard flow
 - Order lookup via user ID
 - Product selection & action type (refund / exchange / return)
@@ -65,6 +66,7 @@ Notification (SendGrid)          → customer + merchant informed
 - Real-time request tracking
 
 ### 🛠️ Admin Dashboard
+
 - Unified ticket management (pending / approved / rejected)
 - Exchange requests with product swap handling
 - Refund processing with automated email notifications
@@ -72,6 +74,7 @@ Notification (SendGrid)          → customer + merchant informed
 - Real-time support analytics
 
 ### 🧠 Backend Intelligence
+
 - **ReAct Agent** architecture — reasoning + tools + database interaction
 - **LLM-based decision engine** (OpenAI / Groq / Mistral)
 - **Vision AI pipeline** — CLIP for product matching, YOLO / Roboflow for damage detection
@@ -135,41 +138,41 @@ The system uses a **ReAct Agent** architecture with tools, reasoning, and direct
 
 ### Frontend
 
-| Technology | Version | Purpose |
-|---|---|---|
-| React | 19.2.5 | UI framework |
-| Vite | 8.0.10 | Build tool & dev server |
-| Tailwind CSS | 4.x | Styling & design system |
-| React Router DOM | 7.14.2 | Client-side routing |
-| Axios | 1.16.0 | HTTP client |
+| Technology       | Version | Purpose                 |
+| ---------------- | ------- | ----------------------- |
+| React            | 19.2.5  | UI framework            |
+| Vite             | 8.0.10  | Build tool & dev server |
+| Tailwind CSS     | 4.x     | Styling & design system |
+| React Router DOM | 7.14.2  | Client-side routing     |
+| Axios            | 1.16.0  | HTTP client             |
 
 ### Backend
 
-| Technology | Version | Purpose |
-|---|---|---|
-| Python | 3.11.9 | Runtime |
-| FastAPI | 0.104.1 | Web framework |
-| LangChain | 0.1.x | ReAct agent orchestration |
-| OpenAI SDK | 1.10.0+ | LLM integration |
-| Psycopg2 | 2.9.9 | PostgreSQL driver |
-| SendGrid | 6.12.5 | Email notifications |
-| YOLO v8 | 8.0.206 | Damage detection |
-| CLIP | — | Product image matching |
+| Technology | Version | Purpose                   |
+| ---------- | ------- | ------------------------- |
+| Python     | 3.11.9  | Runtime                   |
+| FastAPI    | 0.104.1 | Web framework             |
+| LangChain  | 0.1.x   | ReAct agent orchestration |
+| OpenAI SDK | 1.10.0+ | LLM integration           |
+| Psycopg2   | 2.9.9   | PostgreSQL driver         |
+| SendGrid   | 6.12.5  | Email notifications       |
+| YOLO v8    | 8.0.206 | Damage detection          |
+| CLIP       | —       | Product image matching    |
 
 ### Infrastructure & AI
 
-| Service | Provider | Purpose |
-|---|---|---|
-| Frontend Hosting | Vercel | SPA deployment |
-| Backend Hosting | Render | API deployment |
-| Database | PostgreSQL (AWS RDS) | Data persistence |
-| Vector DB | Pinecone | Semantic search |
-| File Storage | AWS S3 | Image uploads |
-| Email | SendGrid | Notifications |
-| LLM (queries) | Groq | Fast customer query handling |
-| LLM (reasoning) | Mistral AI | Refund/exchange workflows |
-| Embeddings | NVIDIA | Knowledge base search |
-| Vision | Roboflow + CLIP | Fraud & damage detection |
+| Service          | Provider             | Purpose                      |
+| ---------------- | -------------------- | ---------------------------- |
+| Frontend Hosting | Vercel               | SPA deployment               |
+| Backend Hosting  | Render               | API deployment               |
+| Database         | PostgreSQL (AWS RDS) | Data persistence             |
+| Vector DB        | Pinecone             | Semantic search              |
+| File Storage     | AWS S3               | Image uploads                |
+| Email            | SendGrid             | Notifications                |
+| LLM (queries)    | Groq                 | Fast customer query handling |
+| LLM (reasoning)  | Mistral AI           | Refund/exchange workflows    |
+| Embeddings       | NVIDIA               | Knowledge base search        |
+| Vision           | Roboflow + CLIP      | Fraud & damage detection     |
 
 > **Why these models?** This is a prototype/MVP focused on validating the architecture using free-tier and developer-friendly APIs. The system is model-agnostic by design — these can be swapped for OpenAI GPT-4.1, Claude Sonnet, Gemini 2.5, Llama 4, or custom fine-tuned vision models in production.
 
@@ -177,13 +180,13 @@ The system uses a **ReAct Agent** architecture with tools, reasoning, and direct
 
 ## 📊 Performance Metrics
 
-| Metric | Target | Current |
-|---|---|---|
-| Chat Response Time | <2s | ~1.5s |
-| Admin Dashboard Load | <1s | ~0.8s |
-| Image Analysis | <3s | ~2.2s |
-| Database Query | <100ms | ~50ms |
-| Manual Review Reduction | — | 60–80% |
+| Metric                  | Target | Current |
+| ----------------------- | ------ | ------- |
+| Chat Response Time      | <2s    | ~1.5s   |
+| Admin Dashboard Load    | <1s    | ~0.8s   |
+| Image Analysis          | <3s    | ~2.2s   |
+| Database Query          | <100ms | ~50ms   |
+| Manual Review Reduction | —      | 60–80%  |
 
 ---
 
@@ -192,6 +195,7 @@ The system uses a **ReAct Agent** architecture with tools, reasoning, and direct
 > As generative AI becomes more accessible, **fake refund claims with AI-generated damage images** will become a major operational challenge for e-commerce.
 
 The vision pipeline proactively checks uploaded evidence:
+
 1. **Is the image AI-generated?** — flags synthetic content before processing
 2. **Does it match the purchased product?** — CLIP-based similarity matching
 3. **Is the damage real?** — YOLO / Roboflow damage detection
@@ -235,13 +239,14 @@ Customer Support Main
 │   │   └── email_service.py  # SendGrid
 │   ├── tools/                # DB tools, refund, exchange, ticket, notification
 │   └── DB/                   # Schema, seeds, init scripts
-``` 
+```
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 16+
 - Python 3.11.9
 - PostgreSQL 12+
@@ -280,13 +285,13 @@ npm run dev
 
 ### Access
 
-| Route | URL |
-|---|---|
-| Landing Page | http://localhost:5173 |
-| Chat Interface | http://localhost:5173/chat |
-| Admin Dashboard | http://localhost:5173/admin |
+| Route           | URL                            |
+| --------------- | ------------------------------ |
+| Landing Page    | http://localhost:5173          |
+| Chat Interface  | http://localhost:5173/chat     |
+| Admin Dashboard | http://localhost:5173/admin    |
 | Database Viewer | http://localhost:5173/database |
-| API Docs | http://127.0.0.1:8000/docs |
+| API Docs        | http://127.0.0.1:8000/docs     |
 
 ---
 
@@ -315,6 +320,7 @@ git push origin main
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for full instructions.
 
 **Live:**
+
 - Frontend: https://customer-support-ui.vercel.app
 - Backend: https://customer-support-api.onrender.com
 
@@ -378,6 +384,6 @@ MIT License — see [LICENSE](./LICENSE) for details.
 
 **Built by [Atharva](https://github.com/Atharvasayyyy)**
 
-*Would love feedback from AI engineers, startup founders, customer support teams & e-commerce operators.*
+_Would love feedback from AI engineers, startup founders, customer support teams & e-commerce operators._
 
 </div>
