@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/demo.gif" alt="Customer Support AI Demo" width="700" />
+
 
 # 🤖 Customer Support Chatbot — Decision Engine
 
@@ -87,7 +87,7 @@ Notification (SendGrid)          → customer + merchant informed
 
 ## 🧠 AI Architecture
 
-<img src="./assets/architecture.gif" alt="AI Architecture Demo" width="700" />
+<img src="./assets/demo.gif" alt="Customer Support AI Demo" width="70" />
 
 The system uses a **ReAct Agent** architecture with tools, reasoning, and direct database interaction.
 
